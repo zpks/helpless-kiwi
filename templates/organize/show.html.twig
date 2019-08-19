@@ -38,15 +38,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {% for registration in activity.registrations %}
                             <tr>
-                                <td>{{ registration.person.fullname }}</td>
+                                {% for registration in activity.registrations %}
+                                    <td>{{ registration.person.fullname }}</td>
+                                {% else %}
+                                    <td>Geen aanmeldingen.</td>
+                                {% endfor %}
                             </tr>
-                        {% else %}
-                            <tr>
-                                <td>Geen aanmeldingen.</td>
-                            </tr>
-                        {% endfor %}
                         </tbody>
                     </table>
             </div>
