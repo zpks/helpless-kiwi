@@ -389,7 +389,16 @@ class Activity
     {
         $now = new \DateTime('now');
         $deadline = $this->getDeadline();
-        $difference = $now->diff($deadline);
+        $difference = date_diff($now, $deadline);
+
+        return $difference->format('%d');
+    }
+
+    public function getDaysTillEvent()
+    {
+        $now = new \DateTime('now');
+        $deadline = $this->getStart();
+        $difference = date_diff($now, $deadline);
 
         return $difference->format('%d');
     }

@@ -19,17 +19,14 @@
         {% endif %}
         <span>Locatie: {{ activity.location.address }}</span>
         <span>Deadline: {{ activity.deadline|date('d-m-Y') }}</span>
-        <span>{{ activity.registrations|length }} {{ activity.registrations|length != 1 ? 'aanmeldingen' : 'aanmelding' }}</span>
+        <span></span>
         
     </div>
 </div>
 <div class="container row">
     <div class="grid-x">
         <div class="cell small-12 {{ is_granted('ROLE_USER') ? 'medium-8' : ''}}">
-            {% for registration in activity.registrations %}
-                <p>{{ registration.person }}</p>
-            {% endfor %}
-            <p>{{ activity.description }}</p>
+           
         </div>
         {% if is_granted('ROLE_USER') %}
         <div class="cell medium-4 registrations">
@@ -37,7 +34,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Aanmeldingen</th>
+                                <th>{{ activity.registrations|length }} {{ activity.registrations|length != 1 ? 'aanmeldingen' : 'aanmelding' }}</th>
                             </tr>
                         </thead>
                         <tbody>
