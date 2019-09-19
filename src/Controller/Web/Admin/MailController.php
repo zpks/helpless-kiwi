@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Web\Admin;
 
 use App\Template\Annotation\MenuItem;
 use App\Entity\Mail\Mail;

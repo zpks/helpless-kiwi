@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Activity;
+namespace App\Controller\Web\Activity;
 
 use App\Template\Annotation\MenuItem;
 use App\Entity\Activity\Activity;

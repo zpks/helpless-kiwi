@@ -1,28 +1,26 @@
 <?php
 
-namespace App\Controller\Profile;
+namespace App\Controller\Web\Admin;
 
+use App\Template\Annotation\MenuItem;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * Activity controller.
  *
- * @Route("/profile", name="profile_")
+ * @Route("/admin", name="admin_")
  */
-class ProfileController extends AbstractController
+class AdminController extends AbstractController
 {
     /**
      * Lists all activities.
      *
+     * @MenuItem(title="Overzicht", menu="admin", activeCriteria="admin_index")
      * @Route("/", name="index", methods={"GET"})
      */
     public function indexAction()
     {
-        $personal = $this->getUser()->getPerson();
-
-        return $this->render('profile/index.html.twig', [
-            'personal' => $personal,
-        ]);
+        return $this->render('admin/index.html.twig');
     }
 }
