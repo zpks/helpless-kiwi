@@ -11,6 +11,7 @@ use App\Log\EventService;
 use App\Log\Doctrine\EntityNewEvent;
 use App\Log\Doctrine\EntityUpdateEvent;
 use App\Entity\Activity\PriceOption;
+use App\Controller\Access\ActivityAccess;
 
 /**
  * Activity controller.
@@ -20,10 +21,12 @@ use App\Entity\Activity\PriceOption;
 class ActivityController extends AbstractController
 {
     private $events;
+    private $access;
 
-    public function __construct(EventService $events)
+    public function __construct(EventService $events, ActivityAccess $access)
     {
         $this->events = $events;
+        $this->access = $access;
     }
 
     /**
@@ -36,7 +39,7 @@ class ActivityController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $activities = $em->getRepository(Activity::class)->findBy([], ['start' => 'DESC']);
+        $activities = $this->access->fetch();
 
         return $this->render('admin/activity/index.html.twig', [
             'activities' => $activities,
@@ -50,23 +53,14 @@ class ActivityController extends AbstractController
      */
     public function newAction(Request $request)
     {
-        $activity = new Activity();
+        $result = $this->access->create($request);
 
-        $form = $this->createForm('App\Form\Activity\ActivityType', $activity);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($activity);
-            $em->persist($activity->getLocation());
-            $em->flush();
-
-            return $this->redirectToRoute('admin_activity_show', ['id' => $activity->getId()]);
+        if ($result instanceof Activity) {
+            return $this->redirectToRoute('admin_activity_show', ['id' => $result->getId()]);
         }
 
         return $this->render('admin/activity/new.html.twig', [
-            'activity' => $activity,
-            'form' => $form->createView(),
+            'form' => $result->createView(),
         ]);
     }
 
@@ -75,9 +69,9 @@ class ActivityController extends AbstractController
      *
      * @Route("/{id}", name="show", methods={"GET"})
      */
-    public function showAction(Activity $activity)
+    public function showAction(string $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $activity = $this->access->read($id);
 
         $createdAt = $this->events->findOneBy($activity, EntityNewEvent::class);
         $modifs = $this->events->findBy($activity, EntityUpdateEvent::class);
@@ -94,20 +88,18 @@ class ActivityController extends AbstractController
      *
      * @Route("/{id}/edit", name="edit", methods={"GET", "POST"})
      */
-    public function editAction(Request $request, Activity $activity)
+    public function editAction(Request $request, string $id)
     {
-        $form = $this->createForm('App\Form\Activity\ActivityType', $activity);
-        $form->handleRequest($request);
+        $activity = $this->access->read($id);
+        $result = $this->access->update($id, $request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
+        if ($result instanceof Activity) {
             return $this->redirectToRoute('admin_activity_show', ['id' => $activity->getId()]);
         }
 
         return $this->render('admin/activity/edit.html.twig', [
             'activity' => $activity,
-            'form' => $form->createView(),
+            'form' => $result->createView(),
         ]);
     }
 
@@ -116,15 +108,15 @@ class ActivityController extends AbstractController
      *
      * @Route("/{id}/delete", name="delete")
      */
-    public function deleteAction(Request $request, Activity $activity)
+    public function deleteAction(Request $request, string $id)
     {
+        $activity = $this->access->read($id);
+
         $form = $this->createDeleteForm($activity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($activity);
-            $em->flush();
+            $this->access->delete($id);
 
             return $this->redirectToRoute('admin_activity_index');
         }
@@ -134,7 +126,7 @@ class ActivityController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    
+
     /**
      * Finds and displays a activity entity.
      *
