@@ -10,6 +10,17 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ActivityAccess extends AbstractAccess
 {
+    protected function secure($activities): array
+    {
+        $blacklist = [];
+
+        if (!$this->isGranted('ROLE_USER')) {
+            $blacklist[] = 'registrations';
+        }
+
+        return $this->generateAccess($activities, 1, $blacklist);
+    }
+
     /**
      * Finds and displays a activity entity.
      */
@@ -17,9 +28,9 @@ class ActivityAccess extends AbstractAccess
     {
         $em = $this->getDoctrine()->getManager();
 
-        $activities = $em->getRepository(Activity::class)->findBy([], ['start' => 'DESC']);
+        $activities = $em->getRepository(Activity::class)->findBy([]);
 
-        return $activities;
+        return $this->secure($activities);
     }
 
     /**
@@ -39,7 +50,7 @@ class ActivityAccess extends AbstractAccess
             $em->persist($activity->getLocation());
             $em->flush();
 
-            return $activity;
+            return $this->secure($activity);
         }
 
         return $form;
@@ -48,17 +59,13 @@ class ActivityAccess extends AbstractAccess
     /**
      * Finds and displays a activity entity.
      */
-    public function read(string $uuid)
+    public function read(string $uuid = null)
     {
         $em = $this->getDoctrine()->getManager();
 
         $activity = $em->getRepository(Activity::class)->find($uuid);
 
-        if (!$this->isGranted('ROLE_USER')) {
-            $activity->setRegistrations(null);
-        }
-
-        return $this->generateAccess($activity);
+        return $this->secure($activity);
     }
 
     /**
@@ -75,7 +82,7 @@ class ActivityAccess extends AbstractAccess
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
 
-            return $activity;
+            return $this->secure($activity);
         }
 
         return $form;

@@ -19,7 +19,7 @@ abstract class AbstractAccess extends AbstractController
 
     use FormRequestHandlerTrait;
 
-    protected function generateAccess(object $entity, int $entityDepth = 1, array $blacklist = [], array $whitelist = null): array
+    protected function generateAccess($entity, int $entityDepth = 1, array $blacklist = [], array $whitelist = null): array
     {
         $em = $this->getDoctrine()->getManager();
 
