@@ -49,11 +49,11 @@ class EntityNormalizer extends ObjectNormalizer
 
     public function referenceAccess($entity): array
     {
+        $className = get_class($entity);
+
         if (null == $entity || null == $this->entityManager->getClassMetadata($className)) {
             return [];
         }
-
-        $className = get_class($entity);
 
         // Return reponse array
         return [
