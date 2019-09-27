@@ -58,7 +58,7 @@ class ActivityAccess extends AbstractAccess
             $activity->setRegistrations(null);
         }
 
-        return $activity;
+        return $this->generateAccess($activity);
     }
 
     /**
