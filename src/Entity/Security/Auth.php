@@ -360,6 +360,8 @@ class Auth implements UserInterface, EquatableInterface
     public function getPasswordRequestSalt(): ?string
     {
         // not needed
+
+        return null;
     }
 
     public function setPasswordRequestSalt(): Auth
