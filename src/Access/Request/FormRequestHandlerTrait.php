@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Access\Request;
+namespace App\Access\Request;
 
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\RequestHandlerInterface;

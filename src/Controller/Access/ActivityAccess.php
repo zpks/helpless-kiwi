@@ -4,6 +4,7 @@ namespace App\Controller\Access;
 
 use App\Entity\Activity\Activity;
 use Symfony\Component\HttpFoundation\Request;
+use App\Access\AbstractAccess;
 
 /**
  * Activity access.
