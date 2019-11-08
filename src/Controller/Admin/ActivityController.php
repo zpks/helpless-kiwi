@@ -123,6 +123,17 @@ class ActivityController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+
+            $regs = $activity->getRegistrations();
+            $prices = $activity->getOptions();
+
+            foreach ($regs as $reg) {
+                $em->remove($reg);
+            }
+            foreach ($prices as $price) {
+                $em->remove($price);
+            }
+
             $em->remove($activity);
             $em->flush();
 
