@@ -2,52 +2,56 @@
 
 namespace App\Entity\Group;
 
+use App\Entity\Taxonomy\Taxonomy;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="children", inversedBy="parent")
+ * })
  */
 class Group extends Taxonomy
 {
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Group\Relation", mappedBy="taxonomy", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Group\Member", mappedBy="taxonomy", orphanRemoval=true)
      */
-    private $relations;
+    private $members;
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->relations = new ArrayCollection();
+        $this->members = new ArrayCollection();
     }
 
     /**
-     * @return Collection|Relation[]
+     * @return Collection|Member[]
      */
-    public function getRelations(): Collection
+    public function getMembers(): Collection
     {
-        return $this->relations;
+        return $this->members;
     }
 
-    public function addRelation(Relation $relation): self
+    public function addMember(Member $member): self
     {
-        if (!$this->relations->contains($relation)) {
-            $this->relations[] = $relation;
-            $relation->setTaxonomy($this);
+        if (!$this->members->contains($member)) {
+            $this->members[] = $member;
+            $member->setTaxonomy($this);
         }
 
         return $this;
     }
 
-    public function removeRelation(Relation $relation): self
+    public function removeMember(Member $member): self
     {
-        if ($this->relations->contains($relation)) {
-            $this->relations->removeElement($relation);
+        if ($this->members->contains($member)) {
+            $this->members->removeElement($member);
             // set the owning side to null (unless already changed)
-            if ($relation->getTaxonomy() === $this) {
-                $relation->setTaxonomy(null);
+            if ($member->getTaxonomy() === $this) {
+                $member->setTaxonomy(null);
             }
         }
 

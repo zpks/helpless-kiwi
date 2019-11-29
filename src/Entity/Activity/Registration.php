@@ -2,38 +2,17 @@
 
 namespace App\Entity\Activity;
 
-use App\Entity\Person\Person;
+use App\Entity\Taxonomy\Relation;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RegistrationRepository")
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="children", inversedBy="parent")
+ * })
  */
-class Registration
+class Registration extends Relation
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="guid")
-     */
-    private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Activity\PriceOption", inversedBy="registrations")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $option;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Person\Person")
-     */
-    private $person;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Activity\Activity", inversedBy="registrations")
-     * @ORM\JoinColumn(name="activity", referencedColumnName="id")
-     */
-    private $activity;
-
     /**
      * @var date
      *
@@ -48,62 +27,21 @@ class Registration
      */
     private $deletedate;
 
-    /**
-     * Get id.
-     *
-     * @return string
-     */
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set id.
-     *
-     * @param string $id
-     */
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function getOption(): ?PriceOption
     {
-        return $this->option;
+        return $this->getTaxonomy();
     }
 
     public function setOption(?PriceOption $option): self
     {
-        $this->option = $option;
-
-        return $this;
-    }
-
-    public function getPerson(): ?Person
-    {
-        return $this->person;
-    }
-
-    public function setPerson(?Person $person): self
-    {
-        $this->person = $person;
+        $this->setTaxonomy($option);
 
         return $this;
     }
 
     public function getActivity(): ?Activity
     {
-        return $this->activity;
-    }
-
-    public function setActivity(?Activity $activity): self
-    {
-        $this->activity = $activity;
-
-        return $this;
+        return $this->getRoot()->getTaxonomy()->getParent();
     }
 
     /**

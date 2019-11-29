@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Entity\Group;
+namespace App\Entity\Taxonomy;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\MappedSuperclass
  */
-class Taxonomy
+abstract class Taxonomy
 {
     /**
      * @ORM\Id()
@@ -25,16 +24,16 @@ class Taxonomy
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Group\Taxonomy", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Taxonomy\Taxonomy", inversedBy="children")
      * @ORM\JoinColumn(name="parent", referencedColumnName="id")
      */
     private $parent;
 
-    /**
+
+     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Group\Taxonomy", mappedBy="parent")
      */
     protected $children;
-
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
@@ -101,41 +100,20 @@ class Taxonomy
         return $this;
     }
 
-    /**
-     * @return Collection|Category[]
-     */
-    public function getCategories(): Collection
-    {
-        return $this->children->filter(function ($x) { return $x instanceof Category; });
-    }
-
-    public function addCategory(Category $category): self
-    {
-        if (!$this->children->contains($category)) {
-            $this->children[] = $category;
-            $category->setParent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCategory(Category $category): self
-    {
-        if ($this->children->contains($category)) {
-            $this->children->removeElement($category);
-            // set the owning side to null (unless already changed)
-            if ($category->getParent() === $this) {
-                $category->setParent(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function __construct()
     {
         $this->children = new ArrayCollection();
         $this->readonly = false;
+    }
+
+
+    /**
+    *   @return Collection|self[]
+    */
+    public function getChildren(): Collection
+    {
+        return $this->children;
     }
 
     public function getNoChildren(): ?bool
@@ -154,6 +132,9 @@ class Taxonomy
 
         return $this;
     }
+
+    
+    
 
     public function getReadonly(): ?bool
     {

@@ -2,7 +2,7 @@
 
 namespace App\Entity\Activity;
 
-use App\Entity\Group\Taxonomy;
+use App\Entity\Taxonomy\Taxonomy;
 use App\Entity\Location\Location;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,36 +14,17 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ActivityRepository")
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(name="children", inversedBy="parent")
+ * })
  * @Vich\Uploadable
  */
-class Activity
+class Activity extends Taxonomy
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue(strategy="UUID")
-     * @ORM\Column(type="guid")
-     */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string", length=100, name="title")
-     */
-    private $name;
-
     /**
      * @ORM\Column(type="text")
      */
     private $description;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Activity\PriceOption", mappedBy="activity")
-     */
-    private $options;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Activity\Registration", mappedBy="activity")
-     */
-    private $registrations;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Location\Location")
@@ -52,7 +33,7 @@ class Activity
     private $location;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Group\Taxonomy")
+     * @ORM\OneToOne(targetEntity="App\Entity\Taxonomy\Taxonomy")
      * @ORM\JoinColumn(name="primairy_author", referencedColumnName="id")
      */
     private $author;
@@ -98,50 +79,6 @@ class Activity
     private $imageUpdatedAt;
 
     /**
-     * Get id.
-     *
-     * @return string
-     */
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set id.
-     *
-     * @param string $id
-     */
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set name.
-     *
-     * @param string $name
-     */
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
      * Get description.
      *
      * @return string
@@ -170,13 +107,13 @@ class Activity
      */
     public function getOptions(): Collection
     {
-        return $this->options;
+        return $this->children->filter(function ($x) { return $x instanceof PriceOption; });
     }
 
     public function addOption(PriceOption $option): self
     {
-        if (!$this->options->contains($option)) {
-            $this->options[] = $option;
+        if (!$this->children->contains($option)) {
+            $this->children[] = $option;
             $option->setActivity($this);
         }
 
@@ -185,8 +122,8 @@ class Activity
 
     public function removeOption(PriceOption $option): self
     {
-        if ($this->options->contains($option)) {
-            $this->options->removeElement($option);
+        if ($this->children->contains($option)) {
+            $this->children->removeElement($option);
             // set the owning side to null (unless already changed)
             if ($option->getActivity() === $this) {
                 $option->setActivity(null);
@@ -201,30 +138,14 @@ class Activity
      */
     public function getRegistrations(): Collection
     {
-        return $this->registrations;
-    }
+        $options = $this->getOptions();
+        $registrationArray = [];
 
-    public function addRegistration(Registration $registration): self
-    {
-        if (!$this->registrations->contains($registration)) {
-            $this->registrations[] = $registration;
-            $registration->setParent($this);
+        foreach ($options as $option) {
+            $registrationArray = array_merge($registrationArray, $option->getRegistrations());
         }
 
-        return $this;
-    }
-
-    public function removeRegistration(Registration $registration): self
-    {
-        if ($this->registrations->contains($registration)) {
-            $this->registrations->removeElement($registration);
-            // set the owning side to null (unless already changed)
-            if ($registration->getParent() === $this) {
-                $registration->setParent(null);
-            }
-        }
-
-        return $this;
+        return new ArrayCollection($registrationArray);
     }
 
     /**
