@@ -20,6 +20,11 @@ class Group extends Taxonomy
      */
     private $members;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Taxonomy\Taxonomy", mappedBy="parent")
+     */
+    protected $children;
+
     public function __construct()
     {
         parent::__construct();

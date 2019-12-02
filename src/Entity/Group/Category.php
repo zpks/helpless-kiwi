@@ -19,6 +19,11 @@ class Category extends Taxonomy
      */
     private $hasGroups;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Taxonomy\Taxonomy", mappedBy="parent")
+     */
+    protected $children;
+
     public function getNoGroups(): ?bool
     {
         return null === $this->hasGroups ? null : !$this->hasGroups;

@@ -6,10 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\MappedSuperclass
- */
-abstract class Taxonomy
+trait Taxonomy
 {
     /**
      * @ORM\Id()
@@ -29,11 +26,11 @@ abstract class Taxonomy
      */
     private $parent;
 
-
-     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Group\Taxonomy", mappedBy="parent")
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Taxonomy\Taxonomy", mappedBy="parent")
      */
     protected $children;
+
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
@@ -100,17 +97,15 @@ abstract class Taxonomy
         return $this;
     }
 
-
     public function __construct()
     {
         $this->children = new ArrayCollection();
         $this->readonly = false;
     }
 
-
     /**
-    *   @return Collection|self[]
-    */
+     *   @return Collection|self[]
+     */
     public function getChildren(): Collection
     {
         return $this->children;
@@ -132,9 +127,6 @@ abstract class Taxonomy
 
         return $this;
     }
-
-    
-    
 
     public function getReadonly(): ?bool
     {

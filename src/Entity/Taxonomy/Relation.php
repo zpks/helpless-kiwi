@@ -7,10 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\MappedSuperclass
- */
-class Relation
+trait Relation
 {
     /**
      * @ORM\Id()
@@ -37,6 +34,7 @@ class Relation
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Taxonomy\Relation", inversedBy="children")
+     * @ORM\JoinColumn(name="parent", referencedColumnName="id")
      */
     private $parent;
 

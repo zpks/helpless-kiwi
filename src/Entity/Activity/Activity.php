@@ -14,13 +14,11 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ActivityRepository")
- * @ORM\AssociationOverrides({
- *      @ORM\AssociationOverride(name="children", inversedBy="parent")
- * })
  * @Vich\Uploadable
  */
-class Activity extends Taxonomy
+class Activity
 {
+    use Taxonomy;
     /**
      * @ORM\Column(type="text")
      */

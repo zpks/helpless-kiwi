@@ -7,12 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RegistrationRepository")
- * @ORM\AssociationOverrides({
- *      @ORM\AssociationOverride(name="children", inversedBy="parent")
- * })
  */
-class Registration extends Relation
+class Registration
 {
+    use Relation;
+
     /**
      * @var date
      *
