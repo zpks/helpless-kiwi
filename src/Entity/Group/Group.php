@@ -117,6 +117,13 @@ class Group
      */
     private $register;
 
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     *
+     * @var ?string[]
+     */
+    private $contactFields;
+
     public function __construct()
     {
         $this->relations = new ArrayCollection();
@@ -313,6 +320,24 @@ class Group
     public function setRegister(bool $register): self
     {
         $this->register = $register;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getContactFields(): array
+    {
+        return $this->contactFields ?? [];
+    }
+
+    /**
+     * @param string[] $contactFields
+     */
+    public function setContactFields(array $contactFields): self
+    {
+        $this->contactFields = $contactFields;
 
         return $this;
     }
