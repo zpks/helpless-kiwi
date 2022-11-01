@@ -8,6 +8,8 @@ simply clone the develop branch:
 git clone https://github.com/jasperweyne/helpless-kiwi.git -b develop
 cd helpless-kiwi
 ```
+First, set up a database. Low level instructions can be found (here)[https://wiki.archlinux.org/title/MariaDB].
+Install, initialize, create an empty database and users and grant privileges to that user.
 
 Now, create a ```.env.local``` file in the root folder. Here, disable HTTPS, and
 configure your database connection. For example (modify this according to your
